@@ -56,7 +56,7 @@ public class DireccionRepository implements Repository<Direccion> {
 
     public List<Direccion> findByIdAlumno(int idAlumno){
         try(PreparedStatement ps = conn.prepareStatement(
-            "SELECT * FROM direccion INNER JOIN alumno ON direccion.idAlumno=alumno.id WHERE direccion.id=?;")){
+            "SELECT * FROM direccion INNER JOIN alumno ON direccion.idAlumno=alumno.id WHERE direccion.idAlumno=?;")){
             ps.setInt(1, idAlumno);
             var rs = ps.executeQuery();
             ArrayList<Direccion> direcciones = new ArrayList<>(); 
@@ -66,7 +66,7 @@ public class DireccionRepository implements Repository<Direccion> {
                 direcciones.add(new Direccion(id, idAlumno, direccion));
             }
             System.out.println(
-                "[SUCCESS] Se han encontrado " + direcciones.size() + " direcciones con ese id de alumno.");
+                "[SUCCESS] Se han encontrado " + direcciones.size() + " direcciones con id de alumno " + idAlumno);
             return direcciones;
         }catch(SQLException e){
             System.err.println("[ERROR] Ha ocurrido un error en los select: " + e.getMessage());
@@ -84,11 +84,11 @@ public class DireccionRepository implements Repository<Direccion> {
         try (PreparedStatement ps = conn.prepareStatement(
                 "INSERT INTO direccion(idAlumno, direccion) VALUES(?,?);")){
                 //osea, existen direcciones
-            ps.setInt(1, t.idAlumno());
-            ps.setString(2, t.direccion());
+            ps.setInt(1, t.getIdAlumno());
+            ps.setString(2, t.getDireccion());
             var res = ps.executeUpdate();
             
-            if(res!=1) throw new SQLException("Direccion " + t.direccion() + " no insertada.");
+            if(res!=1) throw new SQLException("Direccion " + t.getDireccion() + " no insertada.");
             System.out.println("[SUCCESS] Dirección introducida con éxito.");
             return t;
         } catch (SQLException e) {
@@ -101,14 +101,14 @@ public class DireccionRepository implements Repository<Direccion> {
     public void updateById(int id, Direccion t) {
         try(PreparedStatement s = conn.prepareStatement("UPDATE direccion SET idAlumno=?,direccion=? WHERE id=?")) {
 
-            s.setInt(1, t.idAlumno());
-            s.setString(2, t.direccion());
+            s.setInt(1, t.getIdAlumno());
+            s.setString(2, t.getDireccion());
             s.setInt(3, id);
 
             var columnasModificadas = s.executeUpdate();
             s.close();
             if(columnasModificadas<1) throw new SQLException(" la dirección no existe.");
-            System.out.println("[SUCCESS] Dirección con id" + t.id() + " ha sido actualizada con éxito.");
+            System.out.println("[SUCCESS] Dirección con id" + t.getId() + " ha sido actualizada con éxito.");
         } catch (SQLException e) {
             System.err.println("[ERROR] Hubo un error al actualizar: ");
         }   

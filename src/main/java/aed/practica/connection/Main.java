@@ -1,7 +1,6 @@
 package aed.practica.connection;
 
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.List;
 
 import aed.practica.entities.Alumno;
@@ -27,15 +26,15 @@ public class Main {
         DireccionRepository drep = new DireccionRepository(c);
 
         var alumnoDireccionado = new Alumno("guamasa tiene varias casa", 2141532211);
-        alumnoDireccionado.direccion().addAll(List.of(
-            new Direccion(alumnoDireccionado.id(), "Plaza españa"),
-            new Direccion(alumnoDireccionado.id(), "Calle viana")
+        alumnoDireccionado.getDirecciones().addAll(List.of(
+            new Direccion(alumnoDireccionado.getId(), "Plaza españa"),
+            new Direccion(alumnoDireccionado.getId(), "Calle viana")
         ));
 
         //rep.save(alumnoDireccionado);
         //recuperamos de la bbdd porque no me sé el id, no tengo más que uno con este nombre tan
         //curioso
-        var id = rep.findByName("guamasa tiene varias casa").get(0).id();
+        var id = rep.findByName("guamasa tiene varias casa").get(0).getId();
         
         var direcciones = drep.findByIdAlumno(id);
         direcciones.forEach(System.out::println);
@@ -131,9 +130,9 @@ public class Main {
         String tablaDireccion = 
         "direccion(id INTEGER PRIMARY KEY AUTOINCREMENT, idAlumno INTEGER, direccion VARCHAR(30),FOREIGN KEY (idAlumno) REFERENCES alumno(id));";
         String tablaFamiliar = 
-        "familiar(id INTEGER, idAlumno INTEGER, nombre VARCHAR(30), sexo VARCHAR(10), telefono INTEGER, custodia BOOLEAN, FOREIGN KEY (idAlumno) REFERENCES alumno(id));";
+        "familiar(id INTEGER AUTOINCREMENT, idAlumno INTEGER, nombre VARCHAR(30), sexo VARCHAR(10), telefono INTEGER, custodia BOOLEAN, FOREIGN KEY (idAlumno) REFERENCES alumno(id));";
         String tablaAsignatura = 
-        "asignatura(id INTEGER, idAlumno INTEGER, nombreAsignatura VARCHAR(20), curso VARCHAR(20), notas INTEGER, FOREIGN KEY (idAlumno) REFERENCES alumno(id));";
+        "asignatura(id INTEGER AUTOINCREMENT, idAlumno INTEGER, nombreAsignatura VARCHAR(20), curso VARCHAR(20), notas INTEGER, FOREIGN KEY (idAlumno) REFERENCES alumno(id));";
 
         var outputAlumnos = JDBCOperations.createTable(c, tablaAlumnos);
         var outputDireccion = JDBCOperations.createTable(c, tablaDireccion);

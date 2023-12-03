@@ -66,14 +66,14 @@ public class AsignaturasRepository implements Repository<Asignatura>{
         try (PreparedStatement ps = conn.prepareStatement(
                 "INSERT INTO asignatura(idAlumno, nombreAsignatura, curso, notas) VALUES(?,?,?,?);")){
                 //osea, existen direcciones
-            ps.setInt(1, t.idAlumno());
-            ps.setString(2, t.nombreAsignatura());
-            ps.setString(3, t.curso());
-            ps.setInt(4, t.notas());
+            ps.setInt(1, t.getIdAlumno());
+            ps.setString(2, t.getNombreAsignatura());
+            ps.setString(3, t.getCurso());
+            ps.setInt(4, t.getNotas());
             var res = ps.executeUpdate();
             
-            if(res!=1) throw new SQLException("Asignatura " + t.nombreAsignatura() + " no insertada.");
-            System.out.println("[SUCCESS] Asignatura " + t.nombreAsignatura() + " introducida con éxito.");
+            if(res!=1) throw new SQLException("Asignatura " + t.getNombreAsignatura() + " no insertada.");
+            System.out.println("[SUCCESS] Asignatura " + t.getNombreAsignatura() + " introducida con éxito.");
             return t;
         } catch (SQLException e) {
             System.err.println("[ERROR] " + e.getMessage());
@@ -85,14 +85,14 @@ public class AsignaturasRepository implements Repository<Asignatura>{
     public void updateById(int id, Asignatura t) {
         try(PreparedStatement s = conn.prepareStatement("UPDATE asignatura SET nombre=?,curso=? WHERE idAlumno=?")) {
             
-            s.setString(1, t.nombreAsignatura());
-            s.setString(2, t.curso());
-            s.setInt(3, t.notas());
-            s.setInt(4, t.idAlumno());
+            s.setString(1, t.getNombreAsignatura());
+            s.setString(2, t.getCurso());
+            s.setInt(3, t.getNotas());
+            s.setInt(4, t.getIdAlumno());
             
             var columnasModificadas = s.executeUpdate();
             if(columnasModificadas<1) throw new SQLException(" el familiar no existe.");
-            System.out.println("[SUCCESS] Asignatura con nombre " + t.nombreAsignatura() + " ha sido actualizada con éxito.");
+            System.out.println("[SUCCESS] Asignatura con nombre " + t.getNombreAsignatura() + " ha sido actualizada con éxito.");
         } catch (SQLException e) {
             System.err.println("[ERROR] Hubo un error al actualizar: ");
         }   
@@ -104,8 +104,8 @@ public class AsignaturasRepository implements Repository<Asignatura>{
         try (PreparedStatement ps = conn.prepareStatement("DELETE FROM asignatura WHERE idAlumno=?")) {
             ps.setInt(1, id);
             var columnasModificadas = ps.executeUpdate();
-            if(columnasModificadas<1) throw new SQLException("Asignatura con id " + id + " no existe");
-            System.out.println("[SUCCESS] Asignatura con id " + id + " eliminada exitosamente.");
+            if(columnasModificadas<1) throw new SQLException("Asignaturas con idAlumno " + id + " no existen");
+            System.out.println("[SUCCESS] " + columnasModificadas + " asignaturas han sido eliminadas exitosamente.");
         } catch (Exception e) {
             System.err.println("[ERROR] Hubo un error eliminando asignatura: " + e.getMessage());
         }

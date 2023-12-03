@@ -32,23 +32,4 @@ public class JDBCOperations {
             return "[ERROR] Ha ocurrido un error en la eliminación de la tabla: " + e.getMessage();
         }
     }
-
-
-
-    /* Esto lo dejo comentado por si tengo que cambiar de base de datos
-    public static String createDatabase(Connection c, String query){
-        try {
-            Statement s = c.createStatement();
-            s.executeQuery("CREATE DATABASE " + query + ";");
-            s.close();
-            return "[SUCCESS] Base de datos " + query.split(" ")[0] + " creada correctamente";
-        } catch (SQLException e) {
-            if(e.getMessage().contains("already exists"))
-                return "[ERROR] Ya existía esa base de datos";
-            else
-                return "[ERROR] " + e.getMessage();
-        }
-    }
-    */
-
 }

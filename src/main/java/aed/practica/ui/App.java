@@ -1,11 +1,12 @@
 package aed.practica.ui;
 
+import aed.practica.ui.controllers.MainUIController;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import java.util.Objects;
 
 public class App extends Application{
 
@@ -13,12 +14,11 @@ public class App extends Application{
     public void start(Stage stage) throws Exception {
         
         stage.setTitle("Colegio");
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/school.svg")));
-
-        VBox v = new VBox();
-        Label l = new Label("hola wayland");
-        v.getChildren().add(l);
-        stage.setScene(new Scene(v));
+        stage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/school.svg"))));
+        var s = new Scene(new MainUIController().getView());
+        stage.setScene(s);
+        stage.setMinHeight(470);
+        stage.setMinWidth(600);
         stage.show();
 
     }

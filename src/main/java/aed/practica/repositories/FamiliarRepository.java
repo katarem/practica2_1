@@ -44,8 +44,6 @@ public class FamiliarRepository implements Repository<Familiar> {
             var rs = ps.executeQuery();
             if(!rs.next()) throw new SQLException(" No existe familiar con ese id.");
             
-            //no hacemos bucle, porque sólo debería haber 1 valor, el id es PRIMARY KEY
-            
             int idAlumno = rs.getInt("idAlumno"); 
             String nombre = rs.getString("nombre");
             String sexo = rs.getString("sexo");
@@ -65,13 +63,13 @@ public class FamiliarRepository implements Repository<Familiar> {
         try (PreparedStatement ps = conn.prepareStatement(
                 "INSERT INTO familiar(idAlumno, nombre, sexo) VALUES(?,?,?);")){
                 //osea, existen direcciones
-            ps.setInt(1, t.idAlumno());
-            ps.setString(2, t.nombre());
-            ps.setString(3, t.sexo());
+            ps.setInt(1, t.getIdAlumno());
+            ps.setString(2, t.getNombre());
+            ps.setString(3, t.getSexo());
             var res = ps.executeUpdate();
             
-            if(res!=1) throw new SQLException("Familiar " + t.nombre() + " no insertado.");
-            System.out.println("[SUCCESS] Familiar " + t.nombre() + " introducido con éxito.");
+            if(res!=1) throw new SQLException("Familiar " + t.getNombre() + " no insertado.");
+            System.out.println("[SUCCESS] Familiar " + t.getNombre() + " introducido con éxito.");
             return t;
         } catch (SQLException e) {
             System.err.println("[ERROR] " + e.getMessage());
@@ -83,14 +81,14 @@ public class FamiliarRepository implements Repository<Familiar> {
     public void updateById(int id, Familiar t) {
         try(PreparedStatement s = conn.prepareStatement("UPDATE familiar SET idAlumno=?,nombre=?,sexo=? WHERE id=?")) {
             
-            s.setInt(1, t.idAlumno());
-            s.setString(2, t.nombre());
-            s.setString(3, t.sexo());
+            s.setInt(1, t.getIdAlumno());
+            s.setString(2, t.getNombre());
+            s.setString(3, t.getSexo());
             s.setInt(4, id);
 
             var columnasModificadas = s.executeUpdate();
             if(columnasModificadas<1) throw new SQLException(" el familiar no existe.");
-            System.out.println("[SUCCESS] Familiar con id" + t.id() + " ha sido actualizado con éxito.");
+            System.out.println("[SUCCESS] Familiar con id" + t.getId() + " ha sido actualizado con éxito.");
         } catch (SQLException e) {
             System.err.println("[ERROR] Hubo un error al actualizar: ");
         }   
@@ -99,7 +97,7 @@ public class FamiliarRepository implements Repository<Familiar> {
 
     @Override
     public void deleteById(int id) {
-        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM familiar WHERE id=?")) {
+        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM familiar WHERE id=?;")) {
             ps.setInt(1, id);
             var columnasModificadas = ps.executeUpdate();
             if(columnasModificadas<1) throw new SQLException("Familiar con id " + id + " no existe");

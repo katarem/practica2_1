@@ -103,16 +103,16 @@ public class AlumnosRepository implements Repository<Alumno> {
         try (PreparedStatement ps = conn.prepareStatement(
                 "INSERT INTO alumno(nombre, telefono) VALUES(?,?);")){
                 //osea, existen direcciones
-            if(t.direccion().size()!=0)
-                t.direccion()
+            if(t.getDirecciones().size()!=0)
+                t.getDirecciones()
                 .forEach(direccion -> direccionRepository.save(direccion));
             
             
-            ps.setString(1, t.nombre());
-            ps.setString(2, String.valueOf(t.telefono()));
+            ps.setString(1, t.getNombre());
+            ps.setString(2, String.valueOf(t.getTelefono()));
             var res = ps.executeUpdate();
             
-            if(res!=1) throw new SQLException("Alumno " + t.nombre() + " no insertado.");
+            if(res!=1) throw new SQLException("Alumno " + t.getNombre() + " no insertado.");
             System.out.println("[SUCCESS] Alumno introducido con éxito.");
             return t;
         } catch (SQLException e) {
@@ -125,14 +125,14 @@ public class AlumnosRepository implements Repository<Alumno> {
     public void updateById(int id, Alumno t) {
         try(PreparedStatement s = conn.prepareStatement("UPDATE alumno SET nombre=?,telefono=? WHERE id=?")) {
 
-            s.setString(1, t.nombre());
-            s.setString(2, Integer.toString(t.telefono()));
+            s.setString(1, t.getNombre());
+            s.setString(2, Integer.toString(t.getTelefono()));
             s.setInt(3, id);
 
             var columnasModificadas = s.executeUpdate();
             s.close();
             if(columnasModificadas<1) throw new SQLException(" el alumno no existe.");
-            System.out.println("[SUCCESS] Alumno con id" + t.id() + " ha sido actualizado con éxito.");
+            System.out.println("[SUCCESS] Alumno con id" + t.getId() + " ha sido actualizado con éxito.");
         } catch (SQLException e) {
             System.err.println("[ERROR] Hubo un error al actualizar: ");
         }   
@@ -145,7 +145,7 @@ public class AlumnosRepository implements Repository<Alumno> {
 
             //primero debemos eliminar las direcciones asociadas a ese alumno
             var alumno = findOneById(id);
-            if(alumno.direccion().size()>0) alumno.direccion().forEach(direccion -> direccionRepository.deleteById(direccion.id()));
+            if(alumno.getDirecciones().size()>0) alumno.getDirecciones().forEach(direccion -> direccionRepository.deleteById(direccion.getId()));
 
             ps.setInt(1, id);
             var columnasModificadas = ps.executeUpdate();
