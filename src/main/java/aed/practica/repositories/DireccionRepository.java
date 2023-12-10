@@ -126,5 +126,16 @@ public class DireccionRepository implements Repository<Direccion> {
             System.err.println("[ERROR] Hubo un error eliminando alumno: " + e.getMessage());
         }
     }
+
+    public void deleteByIdAlumno(int idAlumno) {
+        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM direccion WHERE idAlumno=?")) {
+            ps.setInt(1, idAlumno);
+            var columnasModificadas = ps.executeUpdate();
+            if(columnasModificadas<1) throw new SQLException("Dirección con id de alumno  " + idAlumno + " no existe");
+            System.out.println("[SUCCESS] Dirección con id de alumno " + idAlumno + " eliminado exitosamente.");
+        } catch (Exception e) {
+            System.err.println("[ERROR] Hubo un error eliminando alumno: " + e.getMessage());
+        }
+    }
     
 }

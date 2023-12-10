@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import aed.practica.entities.Asignatura;
-import aed.practica.entities.Familiar;
 
 public class AsignaturasRepository implements Repository<Asignatura>{
     
@@ -22,11 +21,12 @@ public class AsignaturasRepository implements Repository<Asignatura>{
             var rs = ps.executeQuery();
             ArrayList<Asignatura> asignaturas = new ArrayList<>();
             while (rs.next()) {
+                int id = rs.getInt("id");
                 int idAlumno = rs.getInt("idAlumno");
                 String nombreAsignatura = rs.getString("nombreAsignatura");
                 String curso = rs.getString("curso");
                 int notas = rs.getInt("notas");
-                asignaturas.add(new Asignatura(idAlumno, nombreAsignatura, curso, notas));
+                asignaturas.add(new Asignatura(id, idAlumno, nombreAsignatura, curso, notas));
             }
             rs.close();
             System.out.println("[SUCCESS] Asignaturas leídas correctamente.");
@@ -51,7 +51,7 @@ public class AsignaturasRepository implements Repository<Asignatura>{
             String curso = rs.getString("curso");
             int notas = rs.getInt("notas");
             System.out.println("[SUCCESS] Asignatura encontrada con éxito.");
-            return new Asignatura(id, nombreAsignatura, curso, notas);
+            return new Asignatura(id, id, nombreAsignatura, curso, notas);
         } catch(SQLException e){
             System.err.println("[ERROR] Hubo errores ejecutando el select: " + e.getMessage());
             return null;
@@ -64,12 +64,13 @@ public class AsignaturasRepository implements Repository<Asignatura>{
         //siempre cierra el flujo funcione o no
 
         try (PreparedStatement ps = conn.prepareStatement(
-                "INSERT INTO asignatura(idAlumno, nombreAsignatura, curso, notas) VALUES(?,?,?,?);")){
+                "INSERT INTO asignatura(id, idAlumno, nombreAsignatura, curso, notas) VALUES(?,?,?,?,?);")){
                 //osea, existen direcciones
-            ps.setInt(1, t.getIdAlumno());
-            ps.setString(2, t.getNombreAsignatura());
-            ps.setString(3, t.getCurso());
-            ps.setInt(4, t.getNotas());
+            ps.setInt(1,t.getId());
+            ps.setInt(2, t.getIdAlumno());
+            ps.setString(3, t.getNombreAsignatura());
+            ps.setString(4, t.getCurso());
+            ps.setInt(5, t.getNotas());
             var res = ps.executeUpdate();
             
             if(res!=1) throw new SQLException("Asignatura " + t.getNombreAsignatura() + " no insertada.");
@@ -83,25 +84,25 @@ public class AsignaturasRepository implements Repository<Asignatura>{
 
     @Override
     public void updateById(int id, Asignatura t) {
-        try(PreparedStatement s = conn.prepareStatement("UPDATE asignatura SET nombre=?,curso=? WHERE idAlumno=?")) {
-            
-            s.setString(1, t.getNombreAsignatura());
-            s.setString(2, t.getCurso());
-            s.setInt(3, t.getNotas());
-            s.setInt(4, t.getIdAlumno());
+        try(PreparedStatement s = conn.prepareStatement("UPDATE asignatura SET idAlumno=?,nombreAsignatura=?,curso=?,notas=? WHERE id=?;")) {
+            s.setInt(1,t.getIdAlumno());
+            s.setString(2, t.getNombreAsignatura());
+            s.setString(3, t.getCurso());
+            s.setInt(4, t.getNotas());
+            s.setInt(5, t.getId());
             
             var columnasModificadas = s.executeUpdate();
             if(columnasModificadas<1) throw new SQLException(" el familiar no existe.");
-            System.out.println("[SUCCESS] Asignatura con nombre " + t.getNombreAsignatura() + " ha sido actualizada con éxito.");
+            System.out.println("[SUCCESS] Asignatura con nombre " + t.getId() + " ha sido actualizada con éxito.");
         } catch (SQLException e) {
-            System.err.println("[ERROR] Hubo un error al actualizar: ");
+            System.err.println("[ERROR] Hubo un error al actualizar: " + e.getMessage());
         }   
     }
 
 
     @Override
     public void deleteById(int id) {
-        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM asignatura WHERE idAlumno=?")) {
+        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM asignatura WHERE id=?")) {
             ps.setInt(1, id);
             var columnasModificadas = ps.executeUpdate();
             if(columnasModificadas<1) throw new SQLException("Asignaturas con idAlumno " + id + " no existen");

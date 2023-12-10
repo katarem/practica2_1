@@ -1,18 +1,15 @@
 package aed.practica.ui.controllers;
 
 import aed.practica.connection.SQLiteConnection;
-import aed.practica.entities.Alumno;
 import aed.practica.entities.Familiar;
 import aed.practica.repositories.FamiliarRepository;
+import aed.practica.utils.Generator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 
@@ -34,7 +31,10 @@ public class FamiliaresController implements Initializable {
 
     private List<Familiar> datos;
     @FXML
-    private TextField idField, idAlumnoField, nombreField, sexoField;
+    private TextField idField, idAlumnoField, nombreField, sexoField, telefonoField;
+
+    @FXML
+    private CheckBox custodiaField;
 
     @FXML
     private TableView tablaView;
@@ -42,7 +42,7 @@ public class FamiliaresController implements Initializable {
 
     public FamiliaresController(){
         try {
-            FXMLLoader f = new FXMLLoader(getClass().getResource("/FamiliaresView.fxml"));
+            FXMLLoader f = new FXMLLoader(getClass().getResource("/fxml/FamiliaresView.fxml"));
             f.setController(this);
             f.load();
         } catch (IOException e) {
@@ -62,10 +62,10 @@ public class FamiliaresController implements Initializable {
 
     @FXML
     private void select(){
-        if(idField.getText().isBlank()) showAll();
-        else showById();
+        if(!idField.getText().isBlank()) showById();
+        else if(!idAlumnoField.getText().isBlank()) showByAlumnoId();
+        else showAll();
     }
-
 
     @FXML
     private void insert(){
@@ -73,7 +73,9 @@ public class FamiliaresController implements Initializable {
             var idAlumno = Integer.parseInt(idAlumnoField.getText());
             var nombre = nombreField.getText();
             var sexo = sexoField.getText();
-            repository.save(new Familiar(idAlumno,nombre,sexo));
+            var telefono = Integer.parseInt(telefonoField.getText());
+            var custodia = custodiaField.isSelected();
+            repository.save(new Familiar(Generator.generarID(),idAlumno,nombre,sexo,telefono,custodia));
             showAll();
         }
     }
@@ -94,7 +96,9 @@ public class FamiliaresController implements Initializable {
             var idAlumno = Integer.parseInt(idAlumnoField.getText());
             var nombre = nombreField.getText();
             var sexo = sexoField.getText();
-            repository.updateById(id, new Familiar(id,idAlumno,nombre,sexo));
+            var telefono = Integer.parseInt(telefonoField.getText());
+            var custodia = custodiaField.isSelected();
+            repository.updateById(id, new Familiar(id,idAlumno,nombre,sexo,telefono,custodia));
             showAll();
             clear();
         }
@@ -106,6 +110,8 @@ public class FamiliaresController implements Initializable {
         idAlumnoField.clear();
         nombreField.clear();
         sexoField.clear();
+        telefonoField.clear();
+        custodiaField.setSelected(false);
     }
 
 
@@ -122,18 +128,28 @@ public class FamiliaresController implements Initializable {
         clear();
     }
 
+    private void showByAlumnoId(){
+        var alumno = Integer.parseInt(idAlumnoField.getText());
+        datos = repository.findCustodia(alumno);
+        showFamiliares(datos);
+    }
+
     private void showFamiliares(List<Familiar> datos){
         ObservableList<Familiar> familiares = FXCollections.observableList(datos);
         TableColumn<Familiar, Integer> columnaId = new TableColumn<>("ID");
-        TableColumn<Familiar, Integer> columnaIdAlumno = new TableColumn<>("Custodia");
+        TableColumn<Familiar, Integer> columnaIdAlumno = new TableColumn<>("ID Alumno");
         TableColumn<Familiar,String> columnaNombre = new TableColumn<>("Nombre");
         TableColumn<Familiar,String> columnaSexo = new TableColumn<>("Sexo");
+        TableColumn<Familiar, Integer> columnaTelefono = new TableColumn<>("Telefono");
+        TableColumn<Familiar, Boolean> columnaCustodia = new TableColumn<>("Custodia");
         columnaId.setCellValueFactory(new PropertyValueFactory<>("id"));
         columnaIdAlumno.setCellValueFactory(new PropertyValueFactory<>("idAlumno"));
         columnaNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         columnaSexo.setCellValueFactory(new PropertyValueFactory<>("sexo"));
+        columnaTelefono.setCellValueFactory(new PropertyValueFactory<>("telefono"));
+        columnaCustodia.setCellValueFactory(new PropertyValueFactory<>("custodia"));
         tablaView.getColumns().clear();
-        tablaView.getColumns().addAll(columnaId,columnaIdAlumno,columnaNombre,columnaSexo);
+        tablaView.getColumns().addAll(columnaId,columnaIdAlumno,columnaNombre,columnaSexo,columnaTelefono,columnaCustodia);
         tablaView.setItems(familiares);
     }
 

@@ -19,8 +19,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 
 public class AlumnosController implements Initializable {
-
-
     private Connection conn;
 
     @FXML
@@ -38,7 +36,7 @@ public class AlumnosController implements Initializable {
 
     public AlumnosController(){
         try {
-            FXMLLoader f = new FXMLLoader(getClass().getResource("/AlumnosView.fxml"));
+            FXMLLoader f = new FXMLLoader(getClass().getResource("/fxml/AlumnosView.fxml"));
             f.setController(this);
             f.load();
         } catch (IOException e) {
@@ -58,10 +56,10 @@ public class AlumnosController implements Initializable {
 
     @FXML
     private void select(){
-        if(idField.getText().isBlank()) showAll();
-        else showById();
+        if(!idField.getText().isBlank()) showById();
+        else if(!nombreField.getText().isBlank()) showByName();
+        else showAll();
     }
-
 
     @FXML
     private void insert(){
@@ -111,6 +109,13 @@ public class AlumnosController implements Initializable {
     private void showById(){
         var id = idField.getText();
         datos = List.of(repository.findOneById(Integer.parseInt(id)));
+        showAlumnos(datos);
+        clear();
+    }
+
+    private void showByName(){
+        var nombre = nombreField.getText();
+        datos = repository.findByName(nombre);
         showAlumnos(datos);
         clear();
     }

@@ -11,28 +11,10 @@ import aed.practica.entities.Alumno;
 import aed.practica.entities.Direccion;
 
 public class AlumnosRepository implements Repository<Alumno> {
-
     private Connection conn;
-    //ya que estos otros 3 repositorios dependen del id del alumno, le doy la responsabilidad
-    //a esta clase, aunque lo normal sería tener todos los repositorios en el mismo servicio.
     private DireccionRepository direccionRepository;
 
-    public AlumnosRepository(Connection conn){ 
-        this.conn = conn;
-        direccionRepository = new DireccionRepository(conn);
-    }
-
-    /*
-     * Creo que tendría más sentido hacer el select * from alumnos en el constructor del repositorio
-     * ya que luego no tendríamos que estar cumpliendo múltiples llamadas, sino teniendo estos datos
-     * al arrancar el programas almacenados en una arraylist del repositorio. Esto evita hacer 
-     * muchas queries a la BBDD, por ende menos carga al servidor.
-     * 
-     * Como la actividad es trabajar con JDBC seguiré como se enseña, pero que en una aplicación
-     * real esto a lo mejor no es tan óptimo cómo debería ser.
-     */
-
-
+    public AlumnosRepository(Connection conn){ this.conn = conn; direccionRepository = new DireccionRepository(conn);}
     @Override
     public List<Alumno> findAll() {
         try(PreparedStatement ps = conn.prepareStatement("SELECT * FROM alumno;")){
@@ -85,7 +67,8 @@ public class AlumnosRepository implements Repository<Alumno> {
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String telefono = rs.getString("telefono");
-                alumnos.add(new Alumno(id, nombre, Integer.parseInt(telefono)));
+                var direcciones = direccionRepository.findByIdAlumno(id);
+                alumnos.add(new Alumno(id, nombre, Integer.parseInt(telefono),direcciones));
             }
             System.out.println("[SUCCESS] Encontrados " + alumnos.size() + " alumnos con el mismo nombre.");
             return alumnos;
@@ -97,17 +80,12 @@ public class AlumnosRepository implements Repository<Alumno> {
 
     @Override
     public Alumno save(Alumno t) {
-
-        //siempre cierra el flujo funcione o no
-
         try (PreparedStatement ps = conn.prepareStatement(
                 "INSERT INTO alumno(nombre, telefono) VALUES(?,?);")){
-                //osea, existen direcciones
             if(t.getDirecciones().size()!=0)
                 t.getDirecciones()
                 .forEach(direccion -> direccionRepository.save(direccion));
-            
-            
+
             ps.setString(1, t.getNombre());
             ps.setString(2, String.valueOf(t.getTelefono()));
             var res = ps.executeUpdate();

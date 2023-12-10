@@ -3,8 +3,8 @@ package aed.practica.ui.controllers;
 import aed.practica.connection.SQLiteConnection;
 import aed.practica.entities.Alumno;
 import aed.practica.entities.Asignatura;
-import aed.practica.repositories.AlumnosRepository;
 import aed.practica.repositories.AsignaturasRepository;
+import aed.practica.utils.Generator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -42,7 +42,7 @@ public class AsignaturasController implements Initializable {
 
     public AsignaturasController(){
         try {
-            FXMLLoader f = new FXMLLoader(getClass().getResource("/AsignaturasView.fxml"));
+            FXMLLoader f = new FXMLLoader(getClass().getResource("/fxml/AsignaturasView.fxml"));
             f.setController(this);
             f.load();
         } catch (IOException e) {
@@ -74,7 +74,7 @@ public class AsignaturasController implements Initializable {
             var nombreAsignatura = nombreAsignaturaField.getText();
             var curso = cursoField.getText();
             var notas = Integer.parseInt(notasField.getText());
-            repository.save(new Asignatura(idAlumno,nombreAsignatura,curso,notas));
+            repository.save(new Asignatura(Generator.generarID(), idAlumno,nombreAsignatura,curso,notas));
             showAll();
         }
     }
@@ -90,12 +90,13 @@ public class AsignaturasController implements Initializable {
 
     @FXML
     private void update(){
-        if(!idAlumnoField.getText().isBlank() && !nombreAsignaturaField.getText().isBlank() && !notasField.getText().isBlank()){
+        if(!idField.getText().isBlank() && !idAlumnoField.getText().isBlank() && !nombreAsignaturaField.getText().isBlank() && !notasField.getText().isBlank()){
+            var id = Integer.parseInt(idField.getText());
             var idAlumno = Integer.parseInt(idAlumnoField.getText());
             var nombreAsignatura = nombreAsignaturaField.getText();
             var curso = cursoField.getText();
             var notas = Integer.parseInt(notasField.getText());
-            repository.updateById(idAlumno, new Asignatura(idAlumno,nombreAsignatura,curso,notas));
+            repository.updateById(id, new Asignatura(id, idAlumno,nombreAsignatura,curso,notas));
             showAll();
             clear();
         }
@@ -125,16 +126,18 @@ public class AsignaturasController implements Initializable {
 
     private void showAsignaturas(List<Asignatura> datos){
         ObservableList<Asignatura> asignaturas = FXCollections.observableList(datos);
+        TableColumn<Alumno, Integer> columnaId = new TableColumn<>("ID");
         TableColumn<Alumno, Integer> columnaIdAlumno = new TableColumn<>("ID Alumno");
         TableColumn<Alumno,String> columnaNombre = new TableColumn<>("Nombre");
         TableColumn<Alumno,String> columnaCurso = new TableColumn<>("Curso");
         TableColumn<Alumno, Integer> columnaNotas = new TableColumn<>("Notas");
+        columnaId.setCellValueFactory(new PropertyValueFactory<>("id"));
         columnaIdAlumno.setCellValueFactory(new PropertyValueFactory<>("idAlumno"));
         columnaNombre.setCellValueFactory(new PropertyValueFactory<>("nombreAsignatura"));
         columnaCurso.setCellValueFactory(new PropertyValueFactory<>("curso"));
         columnaNotas.setCellValueFactory(new PropertyValueFactory<>("notas"));
         tablaView.getColumns().clear();
-        tablaView.getColumns().addAll(columnaIdAlumno,columnaNombre,columnaCurso,columnaNotas);
+        tablaView.getColumns().addAll(columnaId,columnaIdAlumno,columnaNombre,columnaCurso,columnaNotas);
         tablaView.setItems(asignaturas);
     }
 

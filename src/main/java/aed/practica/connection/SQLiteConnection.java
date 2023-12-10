@@ -29,6 +29,4 @@ public class SQLiteConnection {
             return null;
         }  
     }
-
-
 }

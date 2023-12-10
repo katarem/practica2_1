@@ -40,7 +40,7 @@ public class DireccionesController implements Initializable {
 
     public DireccionesController(){
         try {
-            FXMLLoader f = new FXMLLoader(getClass().getResource("/DireccionesView.fxml"));
+            FXMLLoader f = new FXMLLoader(getClass().getResource("/fxml/DireccionesView.fxml"));
             f.setController(this);
             f.load();
         } catch (IOException e) {
@@ -80,6 +80,11 @@ public class DireccionesController implements Initializable {
         if(!idField.getText().isBlank()){
             var id = Integer.parseInt(idField.getText());
             repository.deleteById(id);
+            showAll();
+        }
+        else if(!idAlumnoField.getText().isBlank()){
+            var idAlumno = Integer.parseInt(idAlumnoField.getText());
+            repository.deleteByIdAlumno(idAlumno);
             showAll();
         }
     }

@@ -1,8 +1,14 @@
 package aed.practica.connection;
 
+import aed.practica.entities.ActividadExtraescolar;
+
+import java.lang.reflect.Field;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JDBCOperations {
     

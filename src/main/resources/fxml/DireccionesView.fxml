@@ -12,14 +12,12 @@
    <left>
       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
-            <Label text="ID ALUMNO" />
-            <TextField fx:id="idAlumnoField" />
-            <Label layoutX="44.0" layoutY="138.0" text="NOMBRE" />
-            <TextField fx:id="nombreAsignaturaField" layoutX="10.0" layoutY="147.0" />
-            <Label layoutX="44.0" layoutY="160.0" text="CURSO" />
-            <TextField fx:id="cursoField" layoutX="10.0" layoutY="169.0" />
-            <Label layoutX="38.0" layoutY="182.0" text="NOTAS" />
-            <TextField fx:id="notasField" layoutX="10.0" layoutY="191.0" />
+            <Label text="ID" />
+            <TextField fx:id="idField" />
+            <Label layoutX="44.0" layoutY="138.0" text="ID ALUMNO" />
+            <TextField fx:id="idAlumnoField" layoutX="10.0" layoutY="147.0" />
+            <Label layoutX="53.0" layoutY="94.0" text="DIRECCION" />
+            <TextField fx:id="direccionField" layoutX="10.0" layoutY="191.0" />
          </children>
       </VBox>
    </left>

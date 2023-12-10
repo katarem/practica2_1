@@ -1,7 +1,5 @@
 package aed.practica.ui.controllers;
 
-import aed.practica.ui.controllers.AlumnosController;
-import aed.practica.ui.controllers.DireccionesController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -16,19 +14,16 @@ public class MainUIController implements Initializable {
 
     @FXML
     private TabPane view;
-
     @FXML
-    private Tab alumnosTab, direccionesTab, familiaresTab, asignaturasTab;
-
+    private Tab tablasTab, alumnosTab, direccionesTab, familiaresTab, asignaturasTab;
     private AlumnosController alumnosView = new AlumnosController();
     private DireccionesController direccionesView = new DireccionesController();
     private FamiliaresController familiaresView = new FamiliaresController();
 
     private AsignaturasController asignaturasView = new AsignaturasController();
-
     public MainUIController(){
         try{
-            FXMLLoader l = new FXMLLoader(getClass().getResource("/MainUi.fxml"));
+            FXMLLoader l = new FXMLLoader(getClass().getResource("/fxml/MainUi.fxml"));
             l.setController(this);
             l.load();
         } catch(IOException e){

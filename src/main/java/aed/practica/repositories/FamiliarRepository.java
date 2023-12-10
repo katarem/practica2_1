@@ -25,7 +25,9 @@ public class FamiliarRepository implements Repository<Familiar> {
                 int idAlumno = rs.getInt("idAlumno");
                 String nombre = rs.getString("nombre");
                 String sexo = rs.getString("sexo");
-                familiares.add(new Familiar(id, idAlumno, nombre, sexo));
+                int telefono = rs.getInt("telefono");
+                boolean custodia = rs.getBoolean("custodia");
+                familiares.add(new Familiar(id, idAlumno, nombre, sexo,telefono,custodia));
             }
             rs.close();
             System.out.println("[SUCCESS] Familiares leídos correctamente.");
@@ -47,8 +49,10 @@ public class FamiliarRepository implements Repository<Familiar> {
             int idAlumno = rs.getInt("idAlumno"); 
             String nombre = rs.getString("nombre");
             String sexo = rs.getString("sexo");
+            int telefono = rs.getInt("telefono");
+            boolean custodia = rs.getBoolean("custodia");
             System.out.println("[SUCCESS] Familiar encontrado con éxito.");
-            return new Familiar(id, idAlumno, nombre, sexo);
+            return new Familiar(id, idAlumno, nombre, sexo,telefono,custodia);
         } catch(SQLException e){
             System.err.println("[ERROR] Hubo errores ejecutando el select: " + e.getMessage());
             return null;
@@ -61,11 +65,14 @@ public class FamiliarRepository implements Repository<Familiar> {
         //siempre cierra el flujo funcione o no
 
         try (PreparedStatement ps = conn.prepareStatement(
-                "INSERT INTO familiar(idAlumno, nombre, sexo) VALUES(?,?,?);")){
+                "INSERT INTO familiar(id,idAlumno, nombre, sexo, telefono, custodia) VALUES(?,?,?,?,?,?);")){
                 //osea, existen direcciones
-            ps.setInt(1, t.getIdAlumno());
-            ps.setString(2, t.getNombre());
-            ps.setString(3, t.getSexo());
+            ps.setInt(1,t.getId());
+            ps.setInt(2, t.getIdAlumno());
+            ps.setString(3, t.getNombre());
+            ps.setString(4, t.getSexo());
+            ps.setInt(5,t.getTelefono());
+            ps.setBoolean(6,t.isCustodia());
             var res = ps.executeUpdate();
             
             if(res!=1) throw new SQLException("Familiar " + t.getNombre() + " no insertado.");
@@ -79,18 +86,20 @@ public class FamiliarRepository implements Repository<Familiar> {
 
     @Override
     public void updateById(int id, Familiar t) {
-        try(PreparedStatement s = conn.prepareStatement("UPDATE familiar SET idAlumno=?,nombre=?,sexo=? WHERE id=?")) {
+        try(PreparedStatement s = conn.prepareStatement("UPDATE familiar SET idAlumno=?,nombre=?,sexo=?,telefono=?,custodia=? WHERE id=?")) {
             
             s.setInt(1, t.getIdAlumno());
             s.setString(2, t.getNombre());
             s.setString(3, t.getSexo());
             s.setInt(4, id);
-
+            s.setInt(4,t.getTelefono());
+            s.setBoolean(5,t.isCustodia());
+            s.setInt(6,t.getId());
             var columnasModificadas = s.executeUpdate();
             if(columnasModificadas<1) throw new SQLException(" el familiar no existe.");
             System.out.println("[SUCCESS] Familiar con id" + t.getId() + " ha sido actualizado con éxito.");
         } catch (SQLException e) {
-            System.err.println("[ERROR] Hubo un error al actualizar: ");
+            System.err.println("[ERROR] Hubo un error al actualizar: " + e.getMessage());
         }   
     }
 
@@ -117,7 +126,9 @@ public class FamiliarRepository implements Repository<Familiar> {
                 int id = rs.getInt("id");
                 String nombre = rs.getString("nombre");
                 String sexo = rs.getString("sexo");
-                familiares.add(new Familiar(id, idAlumno, nombre, sexo));
+                int telefono = rs.getInt("telefono");
+                boolean custodia = rs.getBoolean("custodia");
+                familiares.add(new Familiar(id, idAlumno, nombre, sexo,telefono,custodia));
             }
             System.out.println("[SUCCESS] Encontrados " + familiares.size() + " familiares del alumno con id " + idAlumno);
             return familiares;
